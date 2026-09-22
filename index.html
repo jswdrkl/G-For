@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>‘G’ for….</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Devanagari:wght@300;400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            marathi: ['"IBM Plex Sans Devanagari"', '"IBM Plex Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Base typography setup with IBM Plex Sans */
+    body {
+      font-family: 'IBM Plex Sans Devanagari', 'IBM Plex Sans', sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* Strict word wrap and justification rules so words do not break awkwardly */
+    .article-content {
+      text-align: justify;
+      text-justify: inter-word;
+      word-break: normal;
+      overflow-wrap: break-word;
+      hyphens: manual;
+      -webkit-hyphens: manual;
+    }
+
+    /* SVG Keyframe Animations */
+    @keyframes floatRipples {
+      0%, 100% {
+        transform: scale(0.96) translateY(0px);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.04) translateY(-3px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 6px rgba(236, 72, 153, 0.45));
+        transform: scale(1);
+      }
+      50% {
+        filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.75));
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes softFloat {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-8px) rotate(3deg);
+      }
+    }
+
+    @keyframes waveMotion {
+      0% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(-15px);
+      }
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    .anim-pulse {
+      animation: pulseGlow 4s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .anim-float {
+      animation: softFloat 5s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .anim-ripple {
+      animation: floatRipples 3.5s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .anim-wave {
+      animation: waveMotion 6s ease-in-out infinite;
+    }
+
+    /* Toast styling */
+    #toast {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-amber-50/40 text-stone-800 dark:bg-[#0f172a] dark:text-stone-200 min-h-screen selection:bg-amber-200 dark:selection:bg-amber-900/60 p-4 sm:p-6 md:p-10 flex flex-col items-center justify-start">
+
+  <div class="w-full max-w-3xl flex items-center justify-end gap-2 mb-6">
+    <!-- Share Button -->
+    <button 
+      id="shareBtn" 
+      aria-label="Share this story" 
+      class="flex items-center justify-center p-2.5 rounded-full border border-stone-300/80 dark:border-stone-700 bg-white/80 dark:bg-stone-800/80 backdrop-blur-md shadow-sm hover:shadow-md active:scale-95 transition-all text-stone-700 dark:text-stone-200 hover:text-amber-600 dark:hover:text-amber-400"
+      title="शेअर करा">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+      </svg>
+    </button>
+
+    <!-- Theme Toggle Button -->
+    <button 
+      id="themeToggleBtn" 
+      aria-label="Toggle theme" 
+      class="flex items-center justify-center p-2.5 rounded-full border border-stone-300/80 dark:border-stone-700 bg-white/80 dark:bg-stone-800/80 backdrop-blur-md shadow-sm hover:shadow-md active:scale-95 transition-all text-stone-700 dark:text-stone-200 hover:text-amber-600 dark:hover:text-amber-400"
+      title="थीम बदला">
+      <!-- Sun Icon (shown in dark mode) -->
+      <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <!-- Moon Icon (shown in light mode) -->
+      <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <main class="w-full max-w-3xl bg-white/90 dark:bg-[#1e293b]/90 backdrop-blur-md rounded-2xl shadow-xl border border-stone-200/80 dark:border-stone-800/80 px-6 py-8 sm:px-10 sm:py-12 transition-all duration-300">
+
+    <div class="w-full mb-8 flex justify-center">
+      <svg class="w-full max-w-md h-auto select-none" viewBox="0 0 460 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bgGripGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.15" />
+            <stop offset="50%" stop-color="#fbbf24" stop-opacity="0.18" />
+            <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.15" />
+          </linearGradient>
+
+          <linearGradient id="gripeBottleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#06b6d4" />
+            <stop offset="50%" stop-color="#0284c7" />
+            <stop offset="100%" stop-color="#0369a1" />
+          </linearGradient>
+
+          <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fb7185" />
+            <stop offset="50%" stop-color="#f43f5e" />
+            <stop offset="100%" stop-color="#e11d48" />
+          </linearGradient>
+
+          <linearGradient id="streamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2" />
+            <stop offset="35%" stop-color="#34d399" stop-opacity="0.8" />
+            <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.9" />
+            <stop offset="100%" stop-color="#ec4899" stop-opacity="0.8" />
+          </linearGradient>
+
+          <radialGradient id="sunburst" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fde047" stop-opacity="0.85" />
+            <stop offset="60%" stop-color="#fb923c" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#f43f5e" stop-opacity="0" />
+          </radialGradient>
+
+          <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+
+        <!-- Subtle ambient backdrop container rounded -->
+        <rect x="5" y="5" width="450" height="200" rx="24" fill="url(#bgGripGrad)" stroke="#e2e8f0" stroke-width="1" class="dark:stroke-stone-700/60" />
+
+        <!-- Connecting flowing spring wave representing natural inner flow -->
+        <g class="anim-wave" opacity="0.85">
+          <path d="M 30,150 C 90,130 140,165 200,145 C 260,125 310,165 370,140 C 400,128 430,145 450,142" stroke="url(#streamGrad)" stroke-width="5" stroke-linecap="round" fill="none" />
+          <path d="M 20,160 C 80,145 130,175 190,155 C 250,135 300,175 360,152 C 400,140 430,155 455,152" stroke="url(#streamGrad)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,6" fill="none" opacity="0.6" />
+        </g>
+
+        <!-- LEFT: Woodward's Gripe Water bottle soothing metaphor -->
+        <g class="anim-float" transform="translate(10, 0)">
+          <!-- Gentle Drop Shadow / Aura -->
+          <ellipse cx="110" cy="155" rx="38" ry="9" fill="#0284c7" opacity="0.18" />
+          
+          <!-- Bottle Body -->
+          <rect x="88" y="65" width="44" height="78" rx="10" fill="url(#gripeBottleGrad)" filter="url(#softGlow)" />
+          <rect x="91" y="68" width="38" height="72" rx="8" fill="#38bdf8" opacity="0.25" />
+          <!-- Neck & Cap -->
+          <rect x="101" y="50" width="18" height="15" rx="3" fill="#0284c7" />
+          <rect x="97" y="44" width="26" height="8" rx="3" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+          
+          <!-- Label with 'G' (Gripe Water) -->
+          <rect x="94" y="80" width="32" height="46" rx="5" fill="#ffffff" class="dark:fill-stone-100" />
+          <text x="110" y="108" font-family="'IBM Plex Sans', sans-serif" font-weight="700" font-size="24" fill="#0284c7" text-anchor="middle">G</text>
+          <text x="110" y="120" font-family="'IBM Plex Sans', sans-serif" font-weight="600" font-size="6.5" fill="#64748b" text-anchor="middle" letter-spacing="0.5">GRIPE</text>
+
+          <!-- Soothing Drops Falling into spoon -->
+          <circle cx="152" cy="116" r="4" fill="#38bdf8" opacity="0.85" />
+          <path d="M 152,106 C 152,106 148,114 148,117 A 4,4 0 0 0 156,117 C 156,114 152,106 152,106 Z" fill="#0ea5e9" />
+          
+          <!-- Soothing Spoon -->
+          <path d="M 142,126 C 158,126 166,118 166,118 L 195,118 C 197,118 198,120 196,122 L 180,126 Z" fill="#94a3b8" />
+          <ellipse cx="152" cy="120" rx="12" ry="5.5" fill="#cbd5e1" />
+          <ellipse cx="152" cy="120" rx="9" ry="3.5" fill="#38bdf8" opacity="0.75" />
+        </g>
+
+        <!-- CENTER: Awakening transformational arrow & sparkling ripple -->
+        <g class="anim-ripple" transform="translate(0, 0)">
+          <circle cx="230" cy="100" r="28" fill="url(#sunburst)" />
+          <circle cx="230" cy="100" r="16" fill="#f59e0b" opacity="0.2" />
+          <!-- Animated Sparkles -->
+          <path d="M 230,76 L 232,84 L 240,86 L 232,88 L 230,96 L 228,88 L 220,86 L 228,84 Z" fill="#fbbf24" />
+          <path d="M 210,118 L 211,122 L 215,123 L 211,124 L 210,128 L 209,124 L 205,123 L 209,122 Z" fill="#34d399" />
+          <path d="M 252,112 L 253,115 L 256,116 L 253,117 L 252,120 L 251,117 L 248,116 L 251,115 Z" fill="#f43f5e" />
+        </g>
+
+        <!-- RIGHT: Gratitude glowing spring & heart bloom -->
+        <g class="anim-pulse" transform="translate(15, 0)">
+          <!-- Glowing Aura around Gratitude Heart -->
+          <ellipse cx="325" cy="155" rx="42" ry="9" fill="#f43f5e" opacity="0.18" />
+          <circle cx="325" cy="100" r="38" fill="url(#sunburst)" opacity="0.4" />
+
+          <!-- Heart Motif (G for Gratitude) -->
+          <path d="M 325,124 C 325,124 295,104 295,84 C 295,72 305,62 316,62 C 322,62 325,66 325,66 C 325,66 328,62 334,62 C 345,62 355,72 355,84 C 355,104 325,124 325,124 Z" fill="url(#heartGrad)" />
+
+          <!-- Inner 'G' for Gratitude glyph -->
+          <text x="325" y="99" font-family="'IBM Plex Sans', sans-serif" font-weight="700" font-size="26" fill="#ffffff" text-anchor="middle" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))">G</text>
+          <text x="325" y="145" font-family="'IBM Plex Sans', sans-serif" font-weight="600" font-size="9" fill="#e11d48" class="dark:fill-rose-300" text-anchor="middle" letter-spacing="1">GRATITUDE</text>
+
+          <!-- Radiating aura rings -->
+          <circle cx="325" cy="94" r="48" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.5" />
+          <circle cx="325" cy="94" r="56" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2 5" opacity="0.35" />
+        </g>
+      </svg>
+    </div>
+
+    <article class="article-content text-base sm:text-lg leading-[1.85] sm:leading-[2.05] tracking-[0.015em] text-stone-800 dark:text-stone-200">
+
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-6 text-stone-900 dark:text-amber-300 text-left">
+        ‘G’ for….
+      </h1>
+
+      <p class="mb-5">
+        दूरदर्शन या त्या वेळी उपलब्ध असलेल्या एकमेव टीव्ही चॅनेलवर ज्ञानदीप, आमची माती आमची माणसं पासून किलबिल-गजरा-चित्रहार-छायागीत आणि अधून मधून टेस्ट मॅचेसचे हायलाईट्स बघत मोठ्या झालेल्या पिढीने –
+      </p>
+
+      <!-- Dialogue sequence with subtle indent -->
+      <div class="my-5 pl-4 sm:pl-6 border-l-2 border-amber-400/80 dark:border-amber-500/60 space-y-2 italic font-medium text-stone-700 dark:text-stone-300">
+        <p>काय झालं?</p>
+        <p>बाळ रडत होतं.</p>
+        <p>‘वुडवर्डस’ दे त्याला, तू लहान असताना तुला देखील मी हेच..</p>
+      </div>
+
+      <p class="mb-5">
+        ही जाहिरात नक्कीच बघितली आहे.
+      </p>
+
+      <p class="mb-5">
+        ‘वुडवर्डस’ हा ग्राईप वॉटरचा, म्हणजे बडीशेप, आले, लिंबू आणि इतर नैसर्गिक घटकांपासून बनवलेल्या, विशेषतः लहान बाळांच्या अपचन, गॅसेस आणि पोटदुखीवरच्या, जास्त साइड इफेक्ट नसलेल्या द्रवरूप औषधाचा खूप जुना ब्रॅंड आहे.
+      </p>
+
+      <p class="mb-5">
+        लहान बाळाच्या विव्हळून रडण्याचे कारण बहुतेक वेळेस पोटदुखी हेच असते पण त्याला ते तसे शब्दात सांगता येत नसल्याने बाळ रडते. अशा वेळेस मग चमचाभर ग्राईप वॉटर पाजले की त्याची पोटदुखी थांबते आणि बाळ शांत, स्वस्थ होते.
+      </p>
+
+      <p class="mb-8 font-medium text-amber-900 dark:text-amber-300">
+        तर, G for ग्राईप वॉटर – पोटदुखीवर एक सोपा, साधा आणि उपयुक्त उपाय..
+      </p>
+
+      <!-- Section Divider -->
+      <div class="my-8 text-center text-xl font-bold tracking-[0.4em] text-amber-600 dark:text-amber-400 select-none" aria-hidden="true">
+        ***
+      </div>
+
+      <p class="mb-5">
+        हे बाळ मोठे झाल्यावर आजूबाजूच्या किंवा दूरच्या व्यक्ती, प्राणी, वस्तू, घटना आणि इतर अनेक गोष्टी जेव्हां ‘त्याला’ हव्या तश्या, ‘त्याच्या’ मनाप्रमाणे वागत नाहीत, घडत नाहीत तेव्हां नकळत मनात खोलवर कुठेतरी ‘मानसिक अपचन’ होते, त्यातून निर्माण होणारे निरर्थक विचारांचे गॅसेस मनाला दुखावतात, मनात ‘शूळ’ उठतो. या सगळ्याचा परिणाम म्हणून ताण-तणाव, संताप, चिडचिड आणि इतर शारीरिक व्याधी उद्भवतात. वागण्या-बोलण्यावर, व्यक्त होण्यावर याचा होणारा परिणाम म्हणजे ‘मानसिक रुदन’ नाही तर दुसरे काय? आणि अशा रडक्या मंडळींपासून समाज आपोआपच चार हात दूर राहतो.
+      </p>
+
+      <p class="mb-5">
+        खरे तर या दृश्य-अदृश्य मानसिक रडगाण्यांच्या मैफिलीना आपणच जबाबदार असतो. कारण सजीव असो वा निर्जीव, कोणाच्याही वर्तनावर आपण कधीच ताबा ठेऊ शकत नाही याची जाणीवच नसते. तशी अवास्तव अपेक्षा बाळगली तर रडतच बसावे लागते. याखेरीज आपण फक्त आपल्या म्हणजे एकाच एक दृष्टिकोनातून जगाकडे पहात असू तर विषय अजूनच गंभीर होतो.
+      </p>
+
+      <p class="mb-5">
+        यामागचे महत्वाचे कारण असते ते म्हणजे इतर व्यक्ती, वस्तू, प्राणी यांचा ‘जसा आहे तसा’ स्वीकार करता न येणे. Acceptance नसणे.
+      </p>
+
+      <p class="mb-5 font-semibold text-stone-900 dark:text-stone-100">
+        कसे थांबवायचे हे मनाचे रुदन? कसा वाढवायचा acceptance?
+      </p>
+
+      <p class="mb-5 font-medium text-emerald-800 dark:text-emerald-300">
+        यावरचा एक उपाय आहे तो म्हणजे कृतज्ञता. Gratitude.
+      </p>
+
+      <p class="mb-5">
+        आपल्या आजूबाजूच्या व्यक्ती, प्राणी, वस्तू आणि घटना यांच्याबद्दल मनात ‘मनापासून’ कृतज्ञतेची भावना असली की आपोआप acceptance येतो. त्यासाठी मनात कुरबुर सुरू होते आहे असे वाटले की थोडे थोडे ‘G for Gratitude’ हे औषध घ्यायला सुरुवात करायची. व्यक्ती, प्राणी आणि घटना यांच्याकडून reaction येण्याची शक्यता असल्याने ‘G for Gratitude’ या औषधाच्या मात्रा घ्यायची सुरुवात शक्यतो निर्जीव गोष्टींपासून करावी. त्यांच्याबद्दलचा स्वीकार वाढला की मग कालांतराने सजीवांच्या बाबतीतही कृतज्ञ राहणे जमू लागते. अनुभूती येते.
+      </p>
+
+      <p class="mb-8">
+        आणि हो, हे ‘G for Gratitude’ नावाचे ग्राईप वॉटर बाहेरून विकत आणावे लागत नाही. तसे ते बाहेर कुठे मिळतच नाही. आपल्या प्रत्येकात त्याचा कधीही न संपणारा साठा असतो. त्याच्या प्रवाहाच्या वाटेत असलेला, आपणच वाढू दिलेला अहंकाराचा बोळा काढून ज्याने त्याने कृतज्ञततेचा झरा खळाळून वाहता करायचा असतो; इतकेच.
+      </p>
+
+      <!-- Document End Sign -->
+      <div class="mt-10 mb-2 text-center text-lg tracking-[0.5em] text-stone-500 dark:text-stone-400 select-none">
+        ⧫⧫⧫
+      </div>
+
+    </article>
+  </main>
+
+  <div id="toast" class="fixed bottom-6 z-50 bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 px-4 py-2.5 rounded-xl shadow-lg opacity-0 pointer-events-none transform translate-y-3 font-marathi text-sm flex items-center gap-2">
+    <svg class="w-4 h-4 text-emerald-400 dark:text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toastMsg">लिंक कॉपी झाली!</span>
+  </div>
+
+  <script>
+    (function () {
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const sunIcon = document.getElementById('sunIcon');
+      const moonIcon = document.getElementById('moonIcon');
+      const shareBtn = document.getElementById('shareBtn');
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      let toastTimer = null;
+
+      // Theme Management
+      function applyTheme(isDark) {
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          document.documentElement.classList.remove('dark');
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+
+      // Initialize theme based on localStorage or OS preference
+      const savedTheme = localStorage.getItem('g_for_theme');
+      if (savedTheme) {
+        applyTheme(savedTheme === 'dark');
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark);
+      }
+
+      themeToggleBtn.addEventListener('click', () => {
+        const isCurrentlyDark = document.documentElement.classList.contains('dark');
+        const nextDark = !isCurrentlyDark;
+        applyTheme(nextDark);
+        localStorage.setItem('g_for_theme', nextDark ? 'dark' : 'light');
+      });
+
+      // Toast notification helper
+      function showToast(message) {
+        toastMsg.textContent = message;
+        toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+        }, 2600);
+      }
+
+      // Fallback copy using execCommand for sandbox iframe compatibility
+      function copyToClipboard(text) {
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          const success = document.execCommand('copy');
+          document.body.removeChild(textarea);
+          return success;
+        } catch (err) {
+          return false;
+        }
+      }
+
+      // Share Button Handler
+      shareBtn.addEventListener('click', async () => {
+        const shareData = {
+          title: "‘G’ for….",
+          text: "G for ग्राईप वॉटर ते G for Gratitude (कृतज्ञता). एक सुंदर चिंतन.",
+          url: window.location.href
+        };
+
+        if (navigator.share) {
+          try {
+            await navigator.share(shareData);
+          } catch (err) {
+            // User aborted or unpermitted; fallback to copy
+            if (err.name !== 'AbortError') {
+              const copied = copyToClipboard(window.location.href);
+              showToast(copied ? 'लिंक क्लिपबोर्डवर कॉपी केली!' : 'शेअर करणे शक्य झाले नाही');
+            }
+          }
+        } else {
+          const copied = copyToClipboard(window.location.href);
+          showToast(copied ? 'लिंक क्लिपबोर्डवर कॉपी केली!' : 'शेअर करणे शक्य झाले नाही');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
